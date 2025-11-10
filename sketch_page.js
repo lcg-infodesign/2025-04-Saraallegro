@@ -1,6 +1,6 @@
-let data;
-let selected;
-let backButton = {}; // oggetto per memorizzare le coordinate del pulsante
+let data; // x memorizzare i dati del file CSV
+let selected; // x il vulcano selezionato
+let backButton = {}; // x coordinate del pulsante "Torna ai vulcani"
 
 function preload() {
   data = loadTable("assets/vulcani.csv", "csv", "header");
@@ -10,15 +10,17 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
   textFont("Futura");
 
+  // recupera i parametri dell'URL per identificare il vulcano selezionato
   let params = getURLParams();
   if (params.vulcano) {
+    // decodifica il nome e trova la riga corrispondente nel file CSV
     selected = data.findRow(decodeURIComponent(params.vulcano), "Volcano Name");
   }
 }
 
 function draw() {
   background(30, 20, 15);
-  drawTitle();
+  drawTitle(); 
   drawVolcanoDetails();
   drawBackButton();
 }
@@ -29,17 +31,20 @@ function drawTitle() {
   textSize(28);
   textAlign(CENTER, CENTER);
   if (selected) {
+    // mostra il nome del vulcano selezionato
     text("VULCANO: " + selected.getString("Volcano Name"), width / 2, 60);
   } else {
+    // messaggio se il vulcano non viene trovato
     text("VULCANO NON TROVATO", width / 2, 60);
   }
   pop();
 }
 
 function drawVolcanoDetails() {
+  // se non c'è un vulcano selezionato, esci
   if (!selected) return;
 
-  // palette e dati
+  // array
   let details = [
     { label: "NOME", value: selected.getString("Volcano Name"), color: color(255, 190, 160) },
     { label: "PAESE", value: selected.getString("Country"), color: color(245, 160, 130) },
@@ -51,12 +56,13 @@ function drawVolcanoDetails() {
     { label: "LONGITUDINE", value: selected.getString("Longitude"), color: color(250, 220, 200) }
   ];
 
+  // definizione griglia
   let cols = 4;
   let rows = 2;
-  let boxW = width / cols - 60;
-  let boxH = 150;
-  let spacingX = 30;
-  let spacingY = 70;
+  let boxW = width / cols - 60; 
+  let boxH = 150; 
+  let spacingX = 30; 
+  let spacingY = 70; 
   let leftMargin = (width - (cols * boxW + (cols - 1) * spacingX)) / 2;
   let topMargin = 160;
 
@@ -64,25 +70,27 @@ function drawVolcanoDetails() {
   textAlign(CENTER, CENTER);
   noStroke();
 
+  // ciclo per disegnare ogni box con i relativi dati
   for (let i = 0; i < details.length; i++) {
     let d = details[i];
-    let col = i % cols;
+    let col = i % cols; 
     let row = floor(i / cols);
 
     let x = leftMargin + col * (boxW + spacingX);
     let y = topMargin + row * (boxH + spacingY);
 
-    // rettangolo
+    // disegna il rettangolo 
     fill(d.color);
     rect(x, y, boxW, boxH, 14);
 
-    // testo dentro il rettangolo
+    // testo generale
     fill(30, 20, 15);
     textSize(16);
     textStyle(BOLD);
     textAlign(CENTER, TOP);
     text(d.label, x + boxW / 2, y + 25);
 
+    // valore del dettaglio
     textSize(14);
     textStyle(NORMAL);
     textAlign(CENTER, TOP);
@@ -110,12 +118,12 @@ function drawBackButton() {
   textAlign(CENTER, CENTER);
   text("TORNA AI VULCANI", x + w / 2, y + h / 2);
 
-  // salva coordinate per il click
+  // salva le coordinate per rilevare i click
   backButton = { x: x, y: y, w: w, h: h };
 }
 
 function mousePressed() {
-  // se clicchi il bottone torna alla pagina principale
+  // controlla se il click è avvenuto dentro il pulsante
   if (
     mouseX > backButton.x &&
     mouseX < backButton.x + backButton.w &&
